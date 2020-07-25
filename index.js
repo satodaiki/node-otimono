@@ -13,14 +13,13 @@ reader.on('line', (line) => {
 reader.on('close', () => {
     const BOARD_INFO = lines[0].split(' ');
     let board = createBoard(BOARD_INFO[0], BOARD_INFO[1]);
-    let y = 0;
     for (let i = 1; i < lines.length; i++ ) {
         const BLOCK_INFO = lines[i].split(' ');
-        createBlock(board, Number(BLOCK_INFO[0]), Number(BLOCK_INFO[1]), [Number(BLOCK_INFO[2]), y]);
-        y += Number(BLOCK_INFO[0]);
+        let p = canPlaced(board, Number(BLOCK_INFO[0]), Number(BLOCK_INFO[1]), Number(BLOCK_INFO[2]));
+        createBlock(board, Number(BLOCK_INFO[0]), Number(BLOCK_INFO[1]), p);
     }
     let output = '';
-    for (let i = board.length - 1; i >= 0; i-- ) {
+    for (let i = 0; i < board.length; i++ ) {
         for (let l = 0; l < board[i].length; l++ ) {
             output += board[i][l];
         }
@@ -41,10 +40,29 @@ function createBoard(height, width) {
     return board;
 }
 
+function canPlaced(board, height, width, x) {
+    let canPlacedY = 0;
+    for (let i = 0; i < board.length; i++ ) {
+        let canPlacedFlag = true;
+        canPlacedY = i
+        for (let l = 0; l < width; l++ ) {
+            if (board[i][x + l] !== '.') {
+                canPlacedFlag = false;
+            }
+        }
+        if (!canPlacedFlag && canPlacedY !== 0) {
+            canPlacedY--;
+            break;
+        }
+    }
+    return [x, canPlacedY];
+}
+
 function createBlock(board, height, width, [x, y]) {
     for (let i = 0; i < height; i++ ) {
         for (let l = 0; l < width; l++ ) {
-            board[y + i][x + l] = '#';
+            board[y - i][x + l] = '#';
         }
     }
 }
+1
